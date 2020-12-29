@@ -1,5 +1,5 @@
 # DOT
-## 3d printed PARTS:
+## 3d printed PARTS
 * Robotarm (2) (25%infill)
 * base (1)
 * cap (2)
