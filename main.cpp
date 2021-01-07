@@ -12,6 +12,8 @@ float y;
 float z;
 float results[5];
 void angles(float ,float , float, float);
+void move(float, float, float, float);
+void gripper_toggle(bool); //True is open, False is closed
 
 void setup() {
 Serial.begin(9600);
@@ -32,6 +34,8 @@ x=x+Xoffset;
 y=y+Yoffset;
 z=z+Zoffset; 
 angles(x,y,z, .8464);
+
+
 }
 
 void loop() {
@@ -44,33 +48,31 @@ void angles(float x, float y, float z, float theta2){
   Serial.println(x);
   Serial.println(y);
   Serial.println(z);
-  //Spherical Coords
+  //Spherical Coords only need to calculate one time
   float rho;
   float theta;
   float phi;
-  rho=sqrt(sq(x)+sq(y)+sq(z));
-  theta=acos(z/rho); 
-  phi=atan(y/x);
-  float LT2X=sqrt(sq(rho)-sq(z));
-  //float theta_d=theta*RAD_TO_DEG;
- // float theta2=0.84;
-  float theta2_d=theta2*RAD_TO_DEG;
-  double theta32=asin((LT2X-(L32*cos(theta2))-LT4)/L43);
-  float theta32_d=theta32*RAD_TO_DEG;
-  double z_cal=L2G+(L32*sin(theta2))-(L43*cos(theta32));
+  rho=sqrt(sq(x)+sq(y)+sq(z));//3d hypotenuse
+  theta=acos(z/rho); //angle between z axis and rho
+  phi=atan(y/x);//angle of servo 1
+  float LT2X=sqrt(sq(rho)-sq(z));//Calculate 3D hypotenuse
+  float theta2_d=theta2*RAD_TO_DEG;//Convert theta 2 to degrees
+  //need to calculate the following iteratively
+  float theta32=asin((LT2X-(L32*cos(theta2))-LT4)/L43);//Calculate theta32
+  float theta32_d=theta32*RAD_TO_DEG;//Convert theta32 to degrees
+  float z_cal=L2G+(L32*sin(theta2))-(L43*cos(theta32));//calculate z
   //Serial.println(z_cal);
-  float dz=abs(z_cal-z);
+  float dz=abs(z_cal-z);//use this value to determine accuracy (closer to 0 is better)
   //Serial.println(dz);
-  float theta_servo_3_d=(90-theta2_d)+theta32_d;
+  float theta_servo_3_d=(90-theta2_d)+theta32_d;//use this value for the servo 3 angle in degrees
 
-  /*theta2=48.5;
-  theta32=5.18;
-  z_cal=65.12;
-  dz=0.12;
-  theta_servo_3_d=46.68;
+//add an IF statement here comparing the dz value, if lower then save all parameters in an array for later
   results[0]=theta2;
   results[1]=theta32;
   results[2]=z_cal;
   results[3]=dz;
-  results[4]=theta_servo_3_d;*/
+  results[4]=theta_servo_3_d;
+}
+void move(float theta1, float theta2, float theta3, float theta4){
+
 }
