@@ -30,9 +30,9 @@ float Xoffset=-159.38; //mm
 float Yoffset=100;//mm
 float Zoffset=15;//mm
 float servo1_offset=0; //determine from calibration in degrees
-float servo2_offset=15;
+float servo2_offset=0;
 float servo3_offset=0;
-float servo4_offset=40;
+float servo4_offset=45;
 float servo5_offset=0;
 float servo1_home=0;
 float servo2_home=135;
@@ -60,7 +60,7 @@ home_servo_all();
 
 //Gein serial and ask for input
 Serial.begin(9600);
-Serial.print("INPUT X ");
+Serial.println("INPUT X ");
 while (!Serial.available()){}
 x=(Serial.readString()).toFloat();
 Serial.println("X is "+String(x));
@@ -68,10 +68,10 @@ Serial.println("INPUT Y ");
 while (!Serial.available()){}
 y=(Serial.readString()).toFloat();
 Serial.println("Y is "+String(y));
-Serial.print("INPUT Z ");
+Serial.println("INPUT Z ");
 while (!Serial.available()){}
 z=(Serial.readString()).toFloat();
-Serial.println("Y is "+String(z));
+Serial.println("Z is "+String(z));
 
 x=x+Xoffset;
 y=y+Yoffset;
@@ -85,7 +85,7 @@ void loop() {
   //Serial.println(results[0]);
   //delay(1000);
   // put your main code here, to run repeatedly:
-  Serial.print("INPUT X ");
+  Serial.println("INPUT X ");
 while (!Serial.available()){}
 x=(Serial.readString()).toFloat();
 Serial.println("X is "+String(x));
@@ -93,10 +93,10 @@ Serial.println("INPUT Y ");
 while (!Serial.available()){}
 y=(Serial.readString()).toFloat();
 Serial.println("Y is "+String(y));
-Serial.print("INPUT Z ");
+Serial.println("INPUT Z ");
 while (!Serial.available()){}
 z=(Serial.readString()).toFloat();
-Serial.println("Y is "+String(z));
+Serial.println("Z is "+String(z));
 
 x=x+Xoffset;
 y=y+Yoffset;
@@ -129,16 +129,20 @@ void angles(float x, float y, float z){
     if (dz<=dz_prev&&isnan(dz)==0){
     results[0]=theta2_iterate;
     results[1]=phi;
+    if (x<0){
+      results[1]=PI+phi;
+      Serial.println(results[1]);
+    }
     results[2]=theta_servo_4_d;
     results[3]=dz;
     results[4]=theta_servo_3_d;
     }
     dz_prev=dz;
   }
-  move(phi*RAD_TO_DEG,results[0],results[4],results[2]);
-  Serial.println("dz is"+String(results[3]));
+  move(results[1]*RAD_TO_DEG,results[0],results[4],results[2]);
+  Serial.println("dz is "+String(results[3]));
   Serial.println(String(results[0]*DEG_TO_RAD));
-  Serial.println("servo 3"+String(results[0]));
+  //Serial.println("servo 3 "+String(results[0]));
 }
 void move(float theta1, float theta2, float theta3, float theta4){
   //home servo 2 to prevent arm from crashing
